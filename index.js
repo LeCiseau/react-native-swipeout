@@ -267,7 +267,7 @@ const Swipeout = createReactClass({
   },
 
   _autoOpen: function(btn) {
-    if (this.state.autoOpen) this._open(-this.state.btnsRightWidth, 'right');
+    if (this.state.autoOpen) this._openRight();
     var onPress = btn.onPress;
     if (onPress) onPress();
   },
