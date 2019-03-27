@@ -97,6 +97,7 @@ const Swipeout = createReactClass({
 
   propTypes: {
     autoClose: PropTypes.bool,
+    autoOpen: PropTypes.bool,
     backgroundColor: PropTypes.string,
     close: PropTypes.bool,
     left: PropTypes.array,
@@ -122,12 +123,14 @@ const Swipeout = createReactClass({
   getInitialState: function() {
     return {
       autoClose: this.props.autoClose || false,
+      autoOpen: this.props.autoOpen || false,
       btnWidth: 0,
       btnsLeftWidth: 0,
       btnsRightWidth: 0,
       contentHeight: 0,
       contentPos: 0,
       contentWidth: 0,
+      openedLeft: false,
       openedRight: false,
       swiping: false,
       tweenDuration: 160,
@@ -263,6 +266,12 @@ const Swipeout = createReactClass({
     if (onPress) onPress();
   },
 
+  _autoOpen: function(btn) {
+    if (this.state.autoOpen) this._open(-this.state.btnsRightWidth, 'right');
+    var onPress = btn.onPress;
+    if (onPress) onPress();
+  },
+
   _open: function(contentPos, direction) {
     const left = direction === 'left';
     const { sectionID, rowID, onOpen } = this.props;
@@ -307,11 +316,11 @@ const Swipeout = createReactClass({
       }, () => {
         this._tweenContent('contentPos', -this.state.btnsRightWidth);
         this._callOnOpen();
-        this.setState({ 
-          contentPos: -this.state.btnsRightWidth, 
-          openedLeft: false, 
-          openedRight: true, 
-          swiping: false 
+        this.setState({
+          contentPos: -this.state.btnsRightWidth,
+          openedLeft: false,
+          openedRight: true,
+          swiping: false
         });
       });
     });
@@ -325,11 +334,11 @@ const Swipeout = createReactClass({
       }, () => {
         this._tweenContent('contentPos', this.state.btnsLeftWidth);
         this._callOnOpen();
-        this.setState({ 
-          contentPos: this.state.btnsLeftWidth, 
-          openedLeft: true, 
-          openedRight: false, 
-          swiping: false 
+        this.setState({
+          contentPos: this.state.btnsLeftWidth,
+          openedLeft: true,
+          openedRight: false,
+          swiping: false
         });
       });
     });
@@ -423,7 +432,7 @@ const Swipeout = createReactClass({
         disabled={btn.disabled}
         height={this.state.contentHeight}
         key={i}
-        onPress={() => this._autoClose(btn)}
+        onPress={() => (this.state.openedLeft || this.state.openedRight) ? this._autoClose(btn) : this._autoOpen(btn)}
         text={btn.text}
         type={btn.type}
         underlayColor={btn.underlayColor}
